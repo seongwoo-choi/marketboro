@@ -33,7 +33,7 @@
 ## EKS Kubeconfig 설정
 ```bash
 $ ssh -i "ec2-key-pair" ubuntu@<Bastion Host Public Ip>
-$ aws eks update-kubeconfig --region <Region 명> --name
+$ aws eks update-kubeconfig --region <Region 명> --name <EKS Cluster 명>
 ```
 
 ## Docker 설치 스크립트
