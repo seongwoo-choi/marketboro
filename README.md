@@ -30,6 +30,9 @@
 - Security Group
 - IAM Instance Profile
 
+## aws console 에 Bastion Host 접속 용 키 페어 등록
+ec2-key-pair 라는 이름으로 키 페어 등록
+
 ## 로컬 머신에서 Terraform 실행
 ```bash
 $ terraform init
@@ -49,7 +52,7 @@ $ sudo ./aws/install
 $ aws --version
 
 # git clone https://github.com/seongwoo-choi/marketboro.git 으로 변경 예정
-$ git clone -b terraform --single-branch https://github.com/seongwoo-choi/marketboro.git
+$ git clone -b k8s --single-branch https://github.com/seongwoo-choi/marketboro.git
 
 $ aws configure
 
@@ -69,6 +72,7 @@ $ kubectl version
 
 ## Docker 설치 스크립트
 ```bash
+# docker.sh
 DOCKER_USER=ubuntu
 
 sudo apt-get update
@@ -92,6 +96,10 @@ sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin -y
 
 sudo usermod -aG docker $DOCKER_USER
+```
+```bash
+$ chmod +x docker.sh
+$ ./docker.sh
 ```
 
 ## eksctl cli 설치
@@ -121,10 +129,11 @@ ALB 를 사용하기 위한 IAM 정책을 생성한다.
 ## cert-manager 배포
 
 cert-manager가 설치되어 있지 않을 경우 AWS Load Balancer Controller에서 Certificate를 배포하지 못한다. 미리 설치되어 있어야 한다.
+[공식 문서](https://aws.amazon.com/ko/premiumsupport/knowledge-center/eks-alb-ingress-controller-setup/)
 [cert-manager 다운로드 링크](https://github.com/jetstack/cert-manager/releases/download/v1.5.4/cert-manager.yaml)
 [cert-manager releases](https://github.com/cert-manager/cert-manager/releases)
 ```bash
-$ cd k8s
+$ cd ~/marketboro/k8s
 $ kubectl create -f cert-manager.yaml
 ```
 
@@ -168,9 +177,58 @@ OIDC 프로바이더를 통해 EKS Cluster 에 AWS ELB 에 대한 생성 관리 
 즉, OIDC 프로바이더는 외부에서 권한을 가져와서 클러스터 내의 SA(aws-load-balancer-controller) 에 그 권한을 다시 부여하는 것이다.
 
 ```bash
-$ kubectl get sa -n kube-systme
+$ kubectl get sa -n kube-system
 $ kubectl get sa aws-load-balancer-controller -n kube-system -o yaml
 ```
 
 OIDC 를 통해 eks 클러스터는 eksctl 에서 생성한 계정(aws-load-balancer-controller)을 통해 AWS 에 접근할 수 있는 권한을 얻고 어떤 AWS 서비스에 접근할 수 있는지에 대한 정보는 annotations 의 role-arn 에 적혀있다. 
 이 role 은 테라폼에서 생성한 my-alb-iam-policy 정책을 사용한다.
+
+## alb-controller 설정
+[공식 문서](https://aws.amazon.com/ko/premiumsupport/knowledge-center/eks-alb-ingress-controller-setup/)
+
+공식 문서 가이드를 따라 아래 명령어를 실행한다.
+```bash
+curl -Lo ingress-controller.yaml https://github.com/kubernetes-sigs/aws-load-balancer-controller/releases/download/$VERSION/v2_4_1_full.yaml
+```
+
+클러스터의 cluster-name 을 현재 사용 중인 클러스터의 이름으로 변경한다.
+```bash
+spec:
+    containers:
+    - args:
+        - --cluster-name=my-eks-cluster # edit the cluster name
+        - --ingress-class=alb
+```
+
+alb-controller.yaml 를 배포하기 앞서 alb 컨트롤러는 인증서를 적용할 수 있는지 확인하고 인증서를 관리하는 cert-manager.yaml 을 먼저 배포하고 그 후에 alb-controller.yaml 를 배포해야 한다.
+
+```bash
+# ~/marketboro/k8s
+$ kubectl create -f cert.manager.yaml
+
+$ kubectl get po -n cert-manager
+
+$ kubectl create -f alb-controller.yaml
+
+$ kubectl get po -n kube-system aws-load-balancer-controller
+```
+
+## k8s manifest
+
+```bash
+# ~/marketboro/k8s
+$ kubectl create -f ingress-alb.yaml
+$ kubectl create -f nginx-service.yaml
+$ kubectl create -f nginx-deployment.yaml
+$ watch kubectl get svc,ing,pod,deploy 
+```
+
+$ kubectl get ing 에 로드 밸런서 주소가 부착된 것을 확인할 수 있다. 해당 로드밸런서 주소로 이동하면 인그레스가 인그레스 룰에 의해 서비스로 경로를 라우팅해준다.
+
+실제로 nginx 기본 페이지에 잘 접속이 되는 것을 확인할 수 있다.
+
+## 오류
+1. eksctl create iamserviceaccount 생성 시 아래와 같은 오류가 발생했다.
+metadata of serviceaccounts that exist in Kubernetes will be updated, as --override-existing-serviceaccounts was set -> CloudFormation 에서 중복으로 생성된 ksctl-my-eks-cluster-addon-iamserviceaccount-kube-system-aws-node 스택을 제거 후 재설치
+[참조](https://github.com/weaveworks/eksctl/issues/3109#issuecomment-763228910)

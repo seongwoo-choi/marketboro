@@ -16832,7 +16832,7 @@ subjects:
     name: cert-manager-webhook
     namespace: cert-manager
 ---
-# Source: cert-manager/templates/service.yaml
+# Source: cert-manager/templates/nginx-service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -16856,7 +16856,7 @@ spec:
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "controller"
 ---
-# Source: cert-manager/templates/webhook-service.yaml
+# Source: cert-manager/templates/webhook-nginx-service.yaml
 apiVersion: v1
 kind: Service
 metadata:
