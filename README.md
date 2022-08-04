@@ -118,11 +118,6 @@ ALB 를 사용하기 위한 IAM 정책을 생성한다.
 
 해당 정책을 EKS 내에서 ALB 서비스를 관장하는 SA 에 붙여줄 것이다.
 
-## aws-load-balancer-controller IAM Role / EKS SA 생성
-eksctl 명령어로 EKS 내에서 ALB 서비스를 관장하는 SA 를 생성한다. 
-
-위에서 생성한 alb 용 IAM Policy 를 붙여준다.
-
 ## cert-manager 배포
 
 cert-manager가 설치되어 있지 않을 경우 AWS Load Balancer Controller에서 Certificate를 배포하지 못한다. 미리 설치되어 있어야 한다.
@@ -132,6 +127,11 @@ cert-manager가 설치되어 있지 않을 경우 AWS Load Balancer Controller�
 $ cd k8s
 $ kubectl create -f cert-manager.yaml
 ```
+
+## aws-load-balancer-controller IAM Role / EKS SA 생성
+eksctl 명령어로 EKS 내에서 ALB 서비스를 관장하는 SA 를 생성한다.
+
+위에서 생성한 alb 용 IAM Policy 를 붙여준다.
 
 ```bash
 $ eksctl create iamserviceaccount \
