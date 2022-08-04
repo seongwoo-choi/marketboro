@@ -30,6 +30,9 @@
 - Security Group
 - IAM Instance Profile
 
+## aws console 에 Bastion Host 접속 용 키 페어 등록
+ec2-key-pair 라는 이름으로 키 페어 등록
+
 ## 로컬 머신에서 Terraform 실행
 ```bash
 $ terraform init
