@@ -43,8 +43,9 @@ resource "aws_security_group" "my-sg-bastion" {
   name   = "my-sg-bastion"
   vpc_id = aws_vpc.my-vpc.id
 
+  # 모든 IP 열어놓는 것은 좋은 방법은 아니나 편의상 모든 IP 에서 22 번 포트로 접근할 수 있게 설정
   ingress {
-    cidr_blocks = ["106.101.130.209/32"]
+    cidr_blocks = ["0.0.0.0/0"]
     description = "ingress security_group_rule for bastion"
     from_port   = "22"
     protocol    = "tcp"

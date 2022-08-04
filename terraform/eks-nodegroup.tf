@@ -3,7 +3,7 @@ resource "aws_eks_node_group" "my-eks-nodegroup" {
   node_group_name = "my-eks-nodegroup"
   node_role_arn   = aws_iam_role.my-iam-role-eks-nodegroup.arn
   subnet_ids      = [aws_subnet.my-private-subnet1.id, aws_subnet.my-private-subnet3.id]
-  instance_types = ["t3a.medium"]
+  instance_types = ["t3.medium"]
   disk_size = 20
 
   labels = {
