@@ -187,11 +187,12 @@ OIDC 를 통해 eks 클러스터는 eksctl 에서 생성한 계정(aws-load-bala
 ## alb-controller 설정
 [공식 문서](https://aws.amazon.com/ko/premiumsupport/knowledge-center/eks-alb-ingress-controller-setup/)
 
-AWS GitHub에서 AWS 로드 밸런서 컨트롤러에 대해 다운로드한 매니페스트 파일에서 다음 명령을 실행한다.
+공식 문서 가이드를 따라 아래 명령어를 실행한다.
 ```bash
 curl -Lo ingress-controller.yaml https://github.com/kubernetes-sigs/aws-load-balancer-controller/releases/download/$VERSION/v2_4_1_full.yaml
 ```
-클러스터의 cluster-name 을 편집한다.
+
+클러스터의 cluster-name 을 현재 사용 중인 클러스터의 이름으로 변경한다.
 ```bash
 spec:
     containers:
@@ -212,6 +213,20 @@ $ kubectl create -f alb-controller.yaml
 
 $ kubectl get po -n kube-system aws-load-balancer-controller
 ```
+
+## k8s manifest
+
+```bash
+# ~/marketboro/k8s
+$ kubectl create -f ingress-alb.yaml
+$ kubectl create -f nginx-service.yaml
+$ kubectl create -f nginx-deployment.yaml
+$ watch kubectl get svc,ing,pod,deploy 
+```
+
+$ kubectl get ing 에 로드 밸런서 주소가 부착된 것을 확인할 수 있다. 해당 로드밸런서 주소로 이동하면 인그레스가 인그레스 룰에 의해 서비스로 경로를 라우팅해준다.
+
+실제로 nginx 기본 페이지에 잘 접속이 되는 것을 확인할 수 있다.
 
 ## 오류
 1. eksctl create iamserviceaccount 생성 시 아래와 같은 오류가 발생했다.
