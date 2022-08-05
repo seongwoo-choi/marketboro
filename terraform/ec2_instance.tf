@@ -5,7 +5,7 @@ resource "aws_instance" "my-ec2-bastion" {
   availability_zone           = "ap-northeast-2a"       # 가용 영역 설정
 
   # 인스턴스 프로파일 설정 -> EC2 인스턴스에 역할(권한) 부여
-  iam_instance_profile = aws_iam_instance_profile.my-ec2-instance-profile.name
+  iam_instance_profile = aws_iam_instance_profile.my-bastion-instance-profile.name
   # AWS 콘솔에서 미리 동록한 키페어의 이름
   key_name = "ec2-key-pair"
 
