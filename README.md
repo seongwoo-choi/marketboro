@@ -256,7 +256,7 @@ Dockerfile 에서 입력받을 환경 변수를 configMap 파일과 secret 파�
 
 ```bash
 # ~/marketboro/k8s
-$ kubectl create secret generic secret-configs --from-file=secrets
+$ kubectl create secret generic secret-configs --from-file=secrets-configs
 $ kubectl create configmap configs --from-file=configs
 ```
 
