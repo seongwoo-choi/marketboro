@@ -84,22 +84,13 @@ resource "aws_security_group" "my-sg-db" {
   vpc_id = aws_vpc.my-vpc.id
 
   ingress {
-    security_groups = [aws_security_group.my-sg-bastion.id, aws_security_group.my-sg-eks-cluster.id]
+    cidr_blocks = [aws_vpc.my-vpc.cidr_block]
     description     = "ingress security_group_rule for db"
     from_port       = "3306"
     protocol        = "tcp"
     self            = "false"
     to_port         = "3306"
   }
-
-#  ingress {
-#    security_groups = [aws_security_group.my-sg-eks-cluster.id]
-#    description     = "ingress security_group_rule for db"
-#    from_port       = "3306"
-#    protocol        = "tcp"
-#    self            = "false"
-#    to_port         = "3306"
-#  }
 
   egress {
     cidr_blocks = ["0.0.0.0/0"]

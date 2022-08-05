@@ -1,0 +1,13 @@
+FROM node:16.15.1-alpine
+WORKDIR /app
+COPY package*.json ./
+ENV PORT $PORT
+ENV DB_NAME $DB_NAME
+ENV DB_USER $DB_USER
+ENV DB_PWD $DB_PWD
+ENV DB_HOST $DB_HOST
+ENV SECRET_KEY $SECRET_KEY
+RUN npm install
+COPY . .
+CMD ["npm", "run", "start"]
+EXPOSE 8080
