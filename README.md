@@ -283,6 +283,28 @@ $ watch kubectl get svc,ing,pod,deploy
 
 $ kubectl get ing 에 로드 밸런서 주소가 부착된 것을 확인할 수 있다. 해당 로드밸런서 주소로 이동하면 인그레스가 인그레스 룰에 의해 서비스로 경로를 라우팅해준다.
 
+## API 
+
+1. POST /api/v1/auth/signup
+```json
+{
+  "email": "email@email.com",
+  "password": "12345"
+}
+```
+   
+2. POST /api/v1/auth/signin
+```json
+{
+  "email": "email@email.com",
+  "password": "12345"
+}
+```
+
+
+3. GET /api/v1/health
+
+
 ## 오류
 1. eksctl create iamserviceaccount 생성 시 아래와 같은 오류가 발생했다.
 
