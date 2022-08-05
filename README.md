@@ -197,7 +197,7 @@ curl -Lo ingress-controller.yaml https://github.com/kubernetes-sigs/aws-load-bal
 ```
 
 클러스터의 cluster-name 을 현재 사용 중인 클러스터의 이름으로 변경한다.
-```bash
+```yaml
 spec:
     containers:
     - args:
@@ -244,6 +244,12 @@ CMD ["npm", "run", "start"]
 EXPOSE 8080
 ```
 
+```bash
+$ docker login
+$ docker build -t how0326/marketboro:latest .
+$ docker push how0326/marketboro:latest
+```
+
 ## config, secret 디렉토리 생성
 
 Dockerfile 에서 입력받을 환경 변수를 configMap 파일과 secret 파일에 작성한 후 아래 명령어를 실행한다.
@@ -252,6 +258,19 @@ Dockerfile 에서 입력받을 환경 변수를 configMap 파일과 secret 파�
 # ~/marketboro/k8s
 $ kubectl create secret generic secret-configs --from-file=secrets
 $ kubectl create configmap configs --from-file=configs
+```
+
+```yaml
+# my-app-deployment.yaml
+...
+      containers:
+        - name: my-app
+          image: how0326/marketboro:latest
+          envFrom:
+            - secretRef:
+                name: secret-configs
+            - configMapRef:
+                name: configs
 ```
 
 ## k8s manifest

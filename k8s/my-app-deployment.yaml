@@ -15,6 +15,11 @@ spec:
       containers:
         - name: my-app
           image: how0326/marketboro:latest
+          envFrom:
+            - secretRef:
+                name: secret-configs
+            - configMapRef:
+                name: configs
           ports:
             - name: tcp
               containerPort: 8080
