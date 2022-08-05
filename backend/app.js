@@ -8,7 +8,7 @@ require("dotenv").config();
 const sequelize = require("./database/database");
 const User = require("./models/user");
 
-const authRoute = require("./routes/authRoute")
+// const authRoute = require("./routes/authRoute")
 
 const app = express();
 
@@ -17,7 +17,7 @@ app.use(helmet());
 app.use(cors());
 app.use(xss());
 
-app.use("/api/v1/auth", authRoute);
+// app.use("/api/v1/auth", authRoute);
 app.get("/api/v1/health", (req, res, next) => {
     res.status(200).json({ msg: "health check" });
 })
@@ -32,7 +32,7 @@ app.use((error, req, res, next) => {
 
 const start = async () => {
     try {
-        await sequelize.sync();
+        // await sequelize.sync();
         // await sequelize.sync({ force: true });
         app.listen(process.env.PORT || 8080);
     } catch(err) {
