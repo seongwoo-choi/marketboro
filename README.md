@@ -215,7 +215,7 @@ $ kubectl get po -n cert-manager
 
 $ kubectl create -f alb-controller.yaml
 
-$ kubectl get po -n kube-system aws-load-balancer-controller
+$ kubectl get po -n kube-system
 ```
 
 ## 백엔드 작업
@@ -230,7 +230,6 @@ Express 프레임워크를 사용하여 간단한 회원가입, 로그인, 헬�
 FROM node:16.15.1-alpine
 WORKDIR /app
 COPY package*.json ./
-ENV SERVER $SERVER
 ENV EMAIL $EMAIL
 ENV PORT $PORT
 ENV DB_NAME $DB_NAME
@@ -245,6 +244,7 @@ EXPOSE 8080
 ```
 
 ```bash
+# ~/marketboro/backend
 $ docker login
 $ docker build -t how0326/marketboro:latest .
 $ docker push how0326/marketboro:latest
@@ -256,7 +256,7 @@ Dockerfile 에서 입력받을 환경 변수를 configMap 파일과 secret 파�
 
 ```bash
 # ~/marketboro/k8s
-$ kubectl create secret generic secret-configs --from-file=secrets-configs
+$ kubectl create secret generic secret-configs --from-file=secret-configs
 $ kubectl create configmap configs --from-file=configs
 ```
 
@@ -280,7 +280,7 @@ $ kubectl create configmap configs --from-file=configs
 $ kubectl create -f ingress-alb.yaml
 $ kubectl create -f my-app-service.yaml
 $ kubectl create -f my-app-deployment.yaml
-$ watch kubectl get svc,ing,pod,deploy 
+$ watch kubectl get svc,ing,pod,deploy
 ```
 
 $ kubectl get ing 에 로드 밸런서 주소가 부착된 것을 확인할 수 있다. 해당 로드밸런서 주소로 이동하면 인그레스가 인그레스 룰에 의해 서비스로 경로를 라우팅해준다.

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: my-app
-          image: how0326/marketboro:latest
+          image: how0326/ott_service:latest
           envFrom:
             - secretRef:
                 name: secret-configs
