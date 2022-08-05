@@ -8,7 +8,7 @@ require("dotenv").config();
 const sequelize = require("./database/database");
 const User = require("./models/user");
 
-// const authRoute = require("./routes/authRoute")
+const authRoute = require("./routes/authRoute")
 
 const app = express();
 
@@ -32,7 +32,7 @@ app.use((error, req, res, next) => {
 
 const start = async () => {
     try {
-        await sequelize.sync();
+        // await sequelize.sync();
         // await sequelize.sync({ force: true });
         app.listen(process.env.PORT || 8080);
     } catch(err) {

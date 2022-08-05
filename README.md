@@ -57,7 +57,7 @@ $ unzip awscliv2.zip
 $ sudo ./aws/install
 $ aws --version
 
-$ git clone https://github.com/seongwoo-choi/marketboro.git 으로 변경 예정
+$ git clone https://github.com/seongwoo-choi/marketboro.git
 $ git checkout -b <branch 명>
 
 $ aws configure
