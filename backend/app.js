@@ -32,7 +32,7 @@ app.use((error, req, res, next) => {
 
 const start = async () => {
     try {
-        // await sequelize.sync();
+        await sequelize.sync();
         // await sequelize.sync({ force: true });
         app.listen(process.env.PORT || 8080);
     } catch(err) {
