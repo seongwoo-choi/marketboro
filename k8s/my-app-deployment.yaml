@@ -1,7 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: my-app
+  name: my-app-deployment
+  labels:
+    app: my-app
 spec:
   replicas: 3
   selector:
@@ -21,5 +23,22 @@ spec:
             - configMapRef:
                 name: configs
           ports:
-            - name: tcp
-              containerPort: 8080
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 10
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 5
+            timeoutSeconds: 10
