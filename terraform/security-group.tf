@@ -85,7 +85,7 @@ resource "aws_security_group" "my-sg-db" {
 
   # 테스트 용도이기 때문에 모든 포트에 열어놓음
   ingress {
-    cidr_blocks = [0.0.0.0/0]
+    cidr_blocks = ["0.0.0.0/0"]
 #    security_groups = [aws_security_group.my-sg-bastion.id, aws_security_group.my-sg-eks-cluster.id]
     description     = "ingress security_group_rule for db"
     from_port       = "3306"
