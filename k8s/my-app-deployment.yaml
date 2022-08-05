@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx
+  name: my-app
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: nginx
+      app: my-app
   template:
     metadata:
       labels:
-        app: nginx
+        app: ma-app
     spec:
       containers:
-        - name: nginx
-          image: nginx:latest
+        - name: my-app
+          image: how0326/marketboro:latest
           ports:
             - name: tcp
-              containerPort: 80
+              containerPort: 8080

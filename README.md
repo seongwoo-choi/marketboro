@@ -218,23 +218,53 @@ $ kubectl create -f alb-controller.yaml
 $ kubectl get po -n kube-system aws-load-balancer-controller
 ```
 
+## 백엔드 작업
+
+Express 프레임워크를 사용하여 간단한 회원가입, 로그인, 헬스 체크 API 구현
+
+## Dockerfile 작성
+
+.env 에서 사용할 파일들을 
+
+```bash
+FROM node:16.15.1-alpine
+WORKDIR /app
+COPY package*.json ./
+ENV SERVER $SERVER
+ENV EMAIL $EMAIL
+ENV PORT $PORT
+ENV DB_NAME $DB_NAME
+ENV DB_USER $DB_USER
+ENV DB_PWD $DB_PWD
+ENV DB_HOST $DB_HOST
+ENV SECRET_KEY $SECRET_KEY
+RUN npm install
+COPY . .
+CMD ["npm", "run", "start"]
+EXPOSE 8080
+```
+
+## config, secret 디렉토리 생성
+
+Dockerfile 에서 입력받을 환경 변수를 configMap 파일과 secret 파일에 작성한 후 아래 명령어를 실행한다.
+
+```bash
+# ~/marketboro/k8s
+$ kubectl create secret generic secret-configs --from-file=secrets
+$ kubectl create configmap configs --from-file=configs
+```
+
 ## k8s manifest
 
 ```bash
 # ~/marketboro/k8s
 $ kubectl create -f ingress-alb.yaml
-$ kubectl create -f nginx-service.yaml
-$ kubectl create -f nginx-deployment.yaml
+$ kubectl create -f my-app-service.yaml
+$ kubectl create -f my-app-deployment.yaml
 $ watch kubectl get svc,ing,pod,deploy 
 ```
 
 $ kubectl get ing 에 로드 밸런서 주소가 부착된 것을 확인할 수 있다. 해당 로드밸런서 주소로 이동하면 인그레스가 인그레스 룰에 의해 서비스로 경로를 라우팅해준다.
-
-실제로 nginx 기본 페이지에 잘 접속이 되는 것을 확인할 수 있다.
-
-## 백엔드 작업
-
-Express 프레임워크를 사용하여 간단한 회원가입, 로그인, 헬스 체크 API 구현
 
 ## 오류
 1. eksctl create iamserviceaccount 생성 시 아래와 같은 오류가 발생했다.
