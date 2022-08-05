@@ -8,6 +8,8 @@
 
 ## Terraform 구성 사항
 
+Terraform 모듈을 사용하지 않고 resource 블록으로만 구성했다.
+
 1. AWS Network 구성
 - VPC
 - Public Subnet, Private Subnet
@@ -55,8 +57,8 @@ $ unzip awscliv2.zip
 $ sudo ./aws/install
 $ aws --version
 
-# git clone https://github.com/seongwoo-choi/marketboro.git 으로 변경 예정
-$ git clone -b k8s --single-branch https://github.com/seongwoo-choi/marketboro.git
+$ git clone https://github.com/seongwoo-choi/marketboro.git 으로 변경 예정
+$ git checkout -b <branch 명>
 
 $ aws configure
 
@@ -224,13 +226,10 @@ Express 프레임워크를 사용하여 간단한 회원가입, 로그인, 헬�
 
 ## Dockerfile 작성
 
-.env 에서 사용할 파일들을 
-
 ```bash
 FROM node:16.15.1-alpine
 WORKDIR /app
 COPY package*.json ./
-ENV EMAIL $EMAIL
 ENV PORT $PORT
 ENV DB_NAME $DB_NAME
 ENV DB_USER $DB_USER
@@ -287,5 +286,6 @@ $ kubectl get ing 에 로드 밸런서 주소가 부착된 것을 확인할 수 
 
 ## 오류
 1. eksctl create iamserviceaccount 생성 시 아래와 같은 오류가 발생했다.
+
 metadata of serviceaccounts that exist in Kubernetes will be updated, as --override-existing-serviceaccounts was set -> CloudFormation 에서 중복으로 생성된 ksctl-my-eks-cluster-addon-iamserviceaccount-kube-system-aws-node 스택을 제거 후 재설치
 [참조](https://github.com/weaveworks/eksctl/issues/3109#issuecomment-763228910)
