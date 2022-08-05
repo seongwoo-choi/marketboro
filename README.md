@@ -58,7 +58,6 @@ $ sudo ./aws/install
 $ aws --version
 
 $ git clone https://github.com/seongwoo-choi/marketboro.git
-$ git checkout -b <branch 명>
 
 $ aws configure
 
@@ -275,7 +274,7 @@ $ kubectl create configmap configs --from-file=configs
 ## k8s manifest
 
 ```bash
-# ~/marketboro/k8s
+# ~/marketboro/k8s/deploy
 $ kubectl create -f ingress-alb.yaml
 $ kubectl create -f my-app-service.yaml
 $ kubectl create -f my-app-deployment.yaml
