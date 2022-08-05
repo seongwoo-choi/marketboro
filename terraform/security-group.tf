@@ -75,3 +75,47 @@ resource "aws_security_group" "my-sg-bastion" {
     Name = "my-sg-bastion"
   }
 }
+
+########### DB Security Group ###########
+
+resource "aws_security_group" "my-sg-db" {
+
+  name   = "my-sg-db"
+  vpc_id = aws_vpc.my-vpc.id
+
+  ingress {
+    security_groups = [aws_security_group.my-sg-bastion.id, aws_security_group.my-sg-eks-cluster.id]
+    description     = "ingress security_group_rule for db"
+    from_port       = "3306"
+    protocol        = "tcp"
+    self            = "false"
+    to_port         = "3306"
+  }
+
+#  ingress {
+#    security_groups = [aws_security_group.my-sg-eks-cluster.id]
+#    description     = "ingress security_group_rule for db"
+#    from_port       = "3306"
+#    protocol        = "tcp"
+#    self            = "false"
+#    to_port         = "3306"
+#  }
+
+  egress {
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "egress security_group_rule for db"
+    from_port   = "0"
+    protocol    = "tcp"
+    self        = "false"
+    to_port     = "65535"
+  }
+
+  depends_on = [
+    aws_security_group.my-sg-bastion,
+    aws_security_group.my-sg-eks-cluster
+  ]
+
+  tags = {
+    Name = "my-sg-db"
+  }
+}

@@ -9,11 +9,11 @@ resource "aws_nat_gateway" "my-nat-gateway" {
   connectivity_type = "public"
 
   tags = {
-    Name        = "my-nat-gateway"
+    Name = "my-nat-gateway"
   }
 
   tags_all = {
-    Name        = "my-nat-gateway"
+    Name = "my-nat-gateway"
   }
 
 }

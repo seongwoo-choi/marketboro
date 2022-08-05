@@ -70,7 +70,7 @@ resource "aws_iam_role_policy_attachment" "my-iam-policy-eks-nodegroup-ecr" {
 
 # Bastion 을 위한 Role
 resource "aws_iam_role" "my-iam-role-ec2-instance-bastion" {
-  assume_role_policy = <<POLICY
+  assume_role_policy   = <<POLICY
 {
   "Statement": [
     {
@@ -90,10 +90,10 @@ POLICY
   path                 = "/"
 
   tags = {
-    Name        = "my-iam-role-ec2-instance-bastion"
+    Name = "my-iam-role-ec2-instance-bastion"
   }
 
   tags_all = {
-    Name        = "my-iam-role-ec2-instance-bastion"
+    Name = "my-iam-role-ec2-instance-bastion"
   }
 }

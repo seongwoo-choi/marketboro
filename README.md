@@ -30,6 +30,10 @@
 - Security Group
 - IAM Instance Profile
 
+4. DB 구성
+- DB instance
+- DB Subnet Group
+
 ## aws console 에 Bastion Host 접속 용 키 페어 등록
 ec2-key-pair 라는 이름으로 키 페어 등록
 
@@ -227,6 +231,10 @@ $ watch kubectl get svc,ing,pod,deploy
 $ kubectl get ing 에 로드 밸런서 주소가 부착된 것을 확인할 수 있다. 해당 로드밸런서 주소로 이동하면 인그레스가 인그레스 룰에 의해 서비스로 경로를 라우팅해준다.
 
 실제로 nginx 기본 페이지에 잘 접속이 되는 것을 확인할 수 있다.
+
+## 백엔드 작업
+
+Express 프레임워크를 사용하여 간단한 회원가입, 로그인, 헬스 체크 API 구현
 
 ## 오류
 1. eksctl create iamserviceaccount 생성 시 아래와 같은 오류가 발생했다.

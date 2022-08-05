@@ -3,11 +3,11 @@ resource "aws_eip" "my-elastic-ip" {
   public_ipv4_pool     = "amazon"
 
   tags = {
-    Name        = "my-elastic-ip"
+    Name = "my-elastic-ip"
   }
 
   tags_all = {
-    Name        = "my-elastic-ip"
+    Name = "my-elastic-ip"
   }
 
   vpc = true

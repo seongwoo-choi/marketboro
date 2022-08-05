@@ -23,3 +23,12 @@ resource "aws_route_table_association" "my-route-association-pri-sub3" {
   subnet_id      = aws_subnet.my-private-subnet3.id
 }
 
+resource "aws_route_table_association" "my-route-association-pri-db-sub1" {
+  route_table_id = aws_route_table.my-route-table-pri-db-sub1.id
+  subnet_id      = aws_subnet.my-private-db-subnet1.id
+}
+
+resource "aws_route_table_association" "my-route-association-pri-db-sub3" {
+  route_table_id = aws_route_table.my-route-table-pri-db-sub3.id
+  subnet_id      = aws_subnet.my-private-db-subnet3.id
+}
