@@ -1,35 +1,27 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
-  name: argo-my-app
+  name: canary-my-app
 spec:
-  replicas: 4
+  replicas: 5
   strategy:
     canary:
+      maxSurge: "50%"
+      maxUnavailable: 0
       steps:
         - setWeight: 25
-        - pause: {duration: 10}
-        - setWeight: 50
-        - pause: {duration: 10}
-        - setWeight: 75
-        - pause: {duration: 10}
-        - setWeight: 100
-        - pause: {duration: 10}
+        - pause: {}
   revisionHistoryLimit: 2
   selector:
     matchLabels:
-      app: my-app
+      app: canary-my-app
   template:
     metadata:
       labels:
-        app: my-app
+        app: canary-my-app
     spec:
       containers:
-        - name: canary-rollout-my-app
+        - name: canary-my-app
           image: how0326/marketboro:canary
           ports:
             - containerPort: 8080
-          resources:
-            requests:
-              memory: 32Mi
-              cpu: 5m
