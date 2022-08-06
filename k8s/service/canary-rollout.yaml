@@ -18,12 +18,10 @@ spec:
   revisionHistoryLimit: 2
   selector:
     matchLabels:
-      rollout: canary
       app: canary-my-app
   template:
     metadata:
       labels:
-        rollout: canary
         app: canary-my-app
     spec:
       containers:
