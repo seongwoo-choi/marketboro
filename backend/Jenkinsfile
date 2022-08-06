@@ -13,7 +13,7 @@ pipeline {
 
     stage('Checkout Application Git Branch') {
       steps {
-        checkout([$class: 'GitSCM', branches: [[name: '*/cicd']], extensions: [], userRemoteConfigs: [[credentialsId: 'git_hub', url: 'https://github.com/seongwoo-choi/marketboro.git']]])
+        checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[credentialsId: 'git_hub', url: 'https://github.com/seongwoo-choi/marketboro.git']]])
       }
       post {
         failure {
@@ -77,14 +77,14 @@ pipeline {
       steps {
         git credentialsId: githubCredential,
             url: 'https://github.com/seongwoo-choi/marketboro.git',
-            branch: 'cicd'
+            branch: 'main'
 
         sh "git config --global user.email ${gitEmail}"
         sh "git config --global user.name ${gitName}"
         sh "sed -i 's/marketboro:*/marketboro:${currentBuild.number}/g' k8s/service/my-app-deployment.yaml"
         sh "git add ."
         sh "git commit -m 'fix:${dockerHubRegistry} ${currentBuild.number}, canary image versioning'"
-        sh "git branch -M cicd"
+        sh "git branch -M main"
         sh "git remote remove origin"
         sh "git remote add origin git@github.com:Infra-Project/OTT-Service-BE.git"
         sh "git push -u origin main"
