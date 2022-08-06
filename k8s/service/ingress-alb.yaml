@@ -22,3 +22,10 @@ spec:
                 name: my-app-service
                 port:
                   number: 80
+          - path: /canary
+            pathType: Prefix
+            backend:
+              service:
+                name: canary-service
+                port:
+                  number: 80
