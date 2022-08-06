@@ -117,16 +117,6 @@ $ sudo mv /tmp/eksctl /usr/local/bin
 $ eksctl version
 ```
 
-## Jenkins 설치 
-```bash
-$ docker run --name jenkins -d -p 8080:8080 -v ~/jenkins:/var/jenkins_home -u root jenkins/jenkins:latest
-```
-
-```bash
-# Jenkins 초기 비밀번호 확인
-$ docker exec -it jenkins bash -c "cat /var/jenkins_home/secrets/initialAdminPassword"
-```
-
 ## ingress-alb IAM Policy 생성
 ALB 를 사용하기 위한 IAM 정책을 생성한다.
 
@@ -163,7 +153,7 @@ $ eksctl create iamserviceaccount \
 ```
 위 명령어를 실행할 시 아래와 같이 no IAM OIDC provider associated with cluster, try 'eksctl utils associate-iam-oidc-provider --region=ap-northeast-2 --cluster=my-eks-cluster' 문구가 발생한다.
 
-![](images/OIDC 프로바이더 설정 필요.png)
+![OIDC](images/OIDC 프로바이더 설정 필요.png)
 
 아래 명령어를 실행한다.
 
@@ -306,12 +296,78 @@ $ kubectl get ing 에 로드 밸런서 주소가 부착된 것을 확인할 수 
 }
 ```
 
-
 3. GET /api/v1/health
 
+## Jenkins CI
+Jenkins 설치 스크립트
+```bash
+sudo apt update
+
+sudo apt-get install default-jdk -y
+java -version
+
+sudo apt install maven -y
+mvn --version
+
+wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | sudo apt-key add -
+echo deb http://pkg.jenkins.io/debian-stable binary/ | sudo tee /etc/apt/sources.list.d/jenkins.list
+sudo apt update
+sudo apt install jenkins -y
+
+# 젠킨스 사이트 접속 시 필요한 초기 비밀번호 출력
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+```
+
+젠킨스 설치를 하면 jenkins 유저가 생성된다.
+jenkins 유저로 변경한 후 공개키와 개인키를 생성한다.
+
+```bash
+$ sudo su - jenkins
+$ ssh-keygen
+$ cat .ssh/id_rsa.pub
+```
+
+공개키를 GitHub Settings -> SSH and GPG Key 에 등록한다.
+이제 jenkins 유저는 ssh 형태로 깃허브 레포지토리에 접근이 가능해진다.
+
+<Bastion Host Public IP>:8080 으로 Jenkins 웹에 접속한다.
+초기 비밀번호를 입력하고 기본 플러그인을 설치한 뒤, docker, docker pipeline 플러그인을 설치한다.
+
+Jenkinsfile 에서 사용할 도커 허브 계정, 깃허브 계정 Credentials 를 등록한다.
+Jenkins 관리 → Manage Credentials → Domains (global) → Global credentials → Add Credentials
+1. 깃허브 계정을 젠킨스에 등록
+- Kind: Username with Password
+- Username: GitHub 계정명
+- Password: GitHub에서 발급받은 토큰 값(Settings-Developer settings-Personal access tokens)
+- ID: 젠킨스 내에서 해당 크레덴셜을 가리키기 위해 사용할 변수 이름을 지정한다.
+
+2. 도커허브 계정을 젠킨스에 등록
+- Kind: Username with Password
+- Username: 도커 허브 계정명
+- Password: 도커 허브에서 발급받은 토큰 값
+- ID: 젠킨스 내에서 해당 크레덴셜을 가리키기 위해 사용할 변수 이름을 지정한다.
+
+![credentials](images/jenkins_credentials.png)
+
+파이프라인 생성
+
+![SCM](images/SCM.png)
+
+![Script path](images/Script path.png)
+
+Jenkinsfile 스크립트 실행 결과
+
+![dashboard](images/marketboro-pipeline-dashboard.png)
 
 ## 오류
-1. eksctl create iamserviceaccount 생성 시 아래와 같은 오류가 발생했다.
-
-metadata of serviceaccounts that exist in Kubernetes will be updated, as --override-existing-serviceaccounts was set -> CloudFormation 에서 중복으로 생성된 ksctl-my-eks-cluster-addon-iamserviceaccount-kube-system-aws-node 스택을 제거 후 재설치
+1. metadata of serviceaccounts that exist in Kubernetes will be updated, as --override-existing-serviceaccounts was set
+eksctl create iamserviceaccount 생성 시 해당 오류가 발생했다.
+CloudFormation 에서 중복으로 생성된 ksctl-my-eks-cluster-addon-iamserviceaccount-kube-system-aws-node 스택을 제거 후 재설치
 [참조](https://github.com/weaveworks/eksctl/issues/3109#issuecomment-763228910)
+
+2. /var/run/docker.sock의 permission denied 발생
+/var/run/docker.sock 파일의 권한을 666으로 변경하여 그룹 내 다른 사용자도 접근 가능하게 변경
+```bash
+sudo chmod 666 /var/run/docker.sock 
+```
+[참조](https://github.com/occidere/TIL/issues/116)
