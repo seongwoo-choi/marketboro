@@ -153,7 +153,7 @@ $ eksctl create iamserviceaccount \
 ```
 위 명령어를 실행할 시 아래와 같이 no IAM OIDC provider associated with cluster, try 'eksctl utils associate-iam-oidc-provider --region=ap-northeast-2 --cluster=my-eks-cluster' 문구가 발생한다.
 
-![OIDC](images/OIDC 프로바이더 설정 필요.png)
+![OIDC](images/OIDC.png)
 
 아래 명령어를 실행한다.
 
@@ -353,7 +353,7 @@ Jenkins 관리 → Manage Credentials → Domains (global) → Global credential
 
 ![SCM](images/SCM.png)
 
-![Script path](images/Script path.png)
+![script_path](images/script_path.png)
 
 Jenkinsfile 스크립트 실행 결과
 
