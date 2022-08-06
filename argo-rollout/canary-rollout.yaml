@@ -18,11 +18,11 @@ spec:
   revisionHistoryLimit: 2
   selector:
     matchLabels:
-      app: argo-my-app
+      app: my-app
   template:
     metadata:
       labels:
-        app: argo-my-app
+        app: my-app
     spec:
       containers:
         - name: canary-rollout-my-app
