@@ -40,7 +40,7 @@ exports.signup = async (req, res, next) => {
             status: true
         });
 
-        res.status(201).json({ id: user.id, msg: "user created successfully" });
+        res.status(201).json({ apiVersion: "v1", id: user.id, msg: "user created successfully" });
 
     } catch (error) {
         next(error);
@@ -76,7 +76,7 @@ exports.signin = async (req, res, next) => {
 
         res
             .status(200)
-            .json({ msg: "login successful", token: token, userId: user.id, status });
+            .json({ apiVersion: "v1", msg: "login successful", token: token, userId: user.id, status });
     } catch (error) {
         next(error);
     }

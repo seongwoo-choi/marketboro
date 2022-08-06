@@ -476,11 +476,7 @@ $ kubectl argo rollouts status canary-my-app
                   cpu: 5m
 ```
 
-아래 명령어를 통해 이미지를 변경한다.
-
-```bash
-$ kubectl argo rollouts set image canary-my-app canary-my-app=how0326/marketboro:canary
-```
+gitOps 관리 형태이기 때문에 이미지 태그를 변경하고 깃허브에 커밋을 한다.
 
 Argo Rollout Dashboard 접속 후 카나리 배포 과정을 확인이 가능하다. 혹은 아래 명령어로 변경 과정을 확인할 수 있다.
 
