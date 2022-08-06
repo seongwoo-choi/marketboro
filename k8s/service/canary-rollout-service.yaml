@@ -2,14 +2,10 @@ apiVersion: v1
 kind: Service
 metadata:
   name: canary-service
-  annotations:
-    kubernetes.io/ingress.class: external
-    alb.ingress.kubernetes.io/target-type: instance
-    alb.ingress.kubernetes.io/scheme: internet-facing
 spec:
+  type: LoadBalancer
+  selector:
+    app: canary-my-app
   ports:
     - port: 80
       targetPort: 8080
-  selector:
-    app: canary-my-app
-  type: LoadBalancer
