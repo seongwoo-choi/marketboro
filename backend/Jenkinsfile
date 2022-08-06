@@ -72,7 +72,7 @@ pipeline {
 
         sh "git config --global user.email ${gitEmail}"
         sh "git config --global user.name ${gitName}"
-        sh "let sed -i 's/marketboro:.*/marketboro:${currentBuild.number}/g' k8s/service/my-app-deployment.yaml"
+        sh "sed -i 's/marketboro:.*/marketboro:${currentBuild.number}/g' k8s/service/my-app-deployment.yaml"
         sh "git add ."
         sh "git commit -m 'fix:${dockerHubRegistry} ${currentBuild.number} image versioning'"
         sh "git branch -M main"
