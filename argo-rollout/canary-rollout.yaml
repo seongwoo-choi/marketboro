@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: argo-my-app
+spec:
+  replicas: 5
+  strategy:
+    canary:
+      # 트래픽을 20% 씩 10초 단위로 점진적 전환시킨다.
+      steps:
+        - setWeight: 20
+        - pause: {duration: 10}
+        - setWeight: 40
+        - pause: {duration: 10}
+        - setWeight: 60
+        - pause: { duration: 10 }
+        - setWeight: 80
+        - pause: { duration: 10 }
+        - setWeight: 100
+        - pause: { duration: 10 }
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: argo-my-app
+  template:
+    metadata:
+      labels:
+        app: argo-my-app
+    spec:
+      containers:
+        - name: canary-rollout-my-app
+          image: how0326/marketboro:latest
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              memory: 32Mi
+              cpu: 5m

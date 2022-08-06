@@ -278,6 +278,12 @@ $ watch kubectl get svc,ing,pod,deploy
 
 $ kubectl get ing 에 로드 밸런서 주소가 부착된 것을 확인할 수 있다. 해당 로드밸런서 주소로 이동하면 인그레스가 인그레스 룰에 의해 서비스로 경로를 라우팅해준다.
 
+argo-cd, argo-rollout 을 통해 배포를 할 것이기 때문에 아래 명령어로 리소스들을 삭제해준다. 
+```bash
+# ~/marketboro/k8s/service
+$ kubectl delete -f .
+```
+
 ## API 
 
 1. POST /api/v1/auth/signup
@@ -367,28 +373,23 @@ $ chmod +x argocd.sh
 $ ./argocd.sh
 ```
 
-kustomize
-```bash
-# resources:
-#   - https://github.com/<Github Profile명>/<GitHub Repo 이름>//<argocd 리소스있는 디렉토리 경로>?ref=<브랜치>
-
-resources:
-  - https://github.com/seongwoo-choi/marketboro//argo-cd?ref=main
-```
-
 ArgoCD 설치 스크립트
 ```bash
 # ArgoCD namespace 생성
 kubectl create namespace argocd
 
 # ArgoCD 설치
-kubectl kustomize ../manifests/| kubectl apply -n argocd -f -
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
 # argocd-server 서비스 타입을 LoadBalancer 로 변경
 kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
 
 # ArgoCD Web UI 접속에 필요한 PWD 확인
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
+```
+
+```bash
+$ kubectl get all -n argocd
 ```
 
 ArgoCD Web UI 에서 jenkins 유저에서 생성한 private key 를 사용하여 깃허브 레포지토리와 ssh 연결을 한다.
@@ -421,6 +422,78 @@ spec:
 
 - source: repository URL 에서 미리 등록한 git repository 를 선택한 후, 배포할 application 의 위치(git repository)를 Path 에 입력한다.
 - destination: kubernetes 의 어느 cluster 에 배포할지, 어떤 namespace 에 배포할지를 결정한다.
+
+argo-cd 를 통한 gitOps 배포
+```bash
+# ~/marketboro/argo-cd
+$ kubectl create -f argo-cd-my-app.yaml
+```
+
+## Argo Rollout 설치
+
+```bash
+# ~/marketboro/argo-management/script
+$ chmod +x argocd-rollout.sh
+$ ./argocd-rollout.sh
+```
+
+Argo Rollout 설치 스크립트
+```bash
+# argo-rollouts namespace 생성
+kubectl create namespace argo-rollouts
+
+# argo-rollouts 설치
+kubectl apply -n argo-rollouts -f https://github.com/argoproj/argo-rollouts/releases/latest/download/install.yaml
+
+# kubectl plugin 설치
+curl -LO https://github.com/argoproj/argo-rollouts/releases/latest/download/kubectl-argo-rollouts-linux-amd64
+
+chmod +x ./kubectl-argo-rollouts-linux-amd64 sudo mv ./kubectl-argo-rollouts-linux-amd64 /usr/local/bin/kubectl-argo-rollouts
+
+kubectl argo rollouts version
+
+# argo-rollout dashboard 를 백그라운드로 가동
+kubectl argo rollouts dashboard &
+```
+
+```bash
+$ kubectl get all -n argo-rollouts
+```
+
+## Argo Rollout
+
+canary 배포를 위한 canary-rollout.yaml, canary-rollout-service.yaml 파일을 생성한다.
+
+```bash
+$ kubectl get application
+```
+
+```bash
+$ kubectl argo rolluts list rollout
+$ kubectl argo rollouts status argo-my-app
+```
+
+gitOps 방식이기 때문에 깃허브 레포지토리에 커밋이 일어나야 CD -> Argo Rollout 이뤄진다.
+
+```yaml
+...
+        spec:
+          containers:
+            - name: canary-rollout-my-app
+              image: how0326/marketboro:latest # -> canary 태그로 변경 후 깃허브에 커밋
+              ports:
+                - containerPort: 8080
+              resources:
+                requests:
+                  memory: 32Mi
+                  cpu: 5m
+```
+
+Argo Rollout Dashboard 접속 후 카나리 배포 과정을 확인이 가능하다. 혹은 아래 명령어로 변경 과정을 확인할 수 있다.
+
+```bash
+$ kubectl argo rollouts get rollout argo-my-app --watch
+```
 
 ## 오류
 1. metadata of serviceaccounts that exist in Kubernetes will be updated, as --override-existing-serviceaccounts was set
