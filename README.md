@@ -455,11 +455,9 @@ $ kubectl get all -n argo-rollouts
 
 ## Argo Rollout
 
-canary 배포를 위한 canary-rollout.yaml, canary-rollout-service.yaml 파일을 생성한다.
+~/marketboro/k8s/service 디렉토리에 canary 배포를 위한 canary-rollout.yaml, canary-rollout-service.yaml 파일을 생성한다.
 
 ```bash
-# ~/marketboro/argo-rollout
-$ kubectl create -f .
 $ kubectl argo rollouts list rollout
 $ kubectl argo rollouts status canary-my-app
 ```

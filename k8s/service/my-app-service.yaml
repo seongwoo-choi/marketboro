@@ -12,6 +12,7 @@ spec:
   type: LoadBalancer
   selector:
     app: my-app
+    rollout: canary
   ports:
     - port: 80
       targetPort: 8080
