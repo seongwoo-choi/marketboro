@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: my-app
-          image: how0326/marketboro:4
+          image: how0326/marketboro:5
           envFrom:
             - secretRef:
                 name: secret-configs
