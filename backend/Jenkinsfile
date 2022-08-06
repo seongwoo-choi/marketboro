@@ -1,0 +1,104 @@
+pipeline {
+  agent any
+
+  environment {
+    dockerHubRegistry = 'how0326/marketboro'
+    dockerHubRegistryCredential = 'docker'
+    githubCredential = 'git_hub'
+    gitEmail = 'hibogo789@gmail.com'
+    gitName = 'seongwoo-choi'
+  }
+
+  stages {
+
+    stage('Checkout Application Git Branch') {
+      steps {
+        checkout([$class: 'GitSCM', branches: [[name: '*/cicd']], extensions: [], userRemoteConfigs: [[credentialsId: 'git_hub', url: 'https://github.com/seongwoo-choi/marketboro.git']]])
+      }
+      post {
+        failure {
+          echo 'Repository clone failure'
+        }
+        success {
+          echo 'Repository clone success'
+        }
+      }
+    }
+
+
+    stage('Docker Image Build') {
+      steps {
+        sh "docker build -t ${dockerHubRegistry}:${currentBuild.number} ."
+        sh "docker build -t ${dockerHubRegistry}:canary ."
+        sh "docker build -t ${dockerHubRegistry}:latest ."
+      }
+      post {
+        failure {
+          echo 'Docker image build failure'
+          //slackSend (color: '#FF0000', message: "FAILED: Docker Image Build '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+        }
+        success {
+          echo 'Docker image build success'
+          //slackSend (color: '#0AC9FF', message: "SUCCESS: Docker Image Build '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+        }
+      }
+    }
+
+    stage('Docker Image Push') {
+      steps {
+        withDockerRegistry(credentialsId: dockerHubRegistryCredential, url: '') {
+          sh "docker push ${dockerHubRegistry}:${currentBuild.number}"
+          sh "docker push ${dockerHubRegistry}:canary"
+          sh "docker push ${dockerHubRegistry}:latest"
+
+          sleep 10
+        }
+      }
+      post {
+        failure {
+          echo 'Docker Image Push failure'
+          sh "docker rmi ${dockerHubRegistry}:${currentBuild.number}"
+          sh "docker rmi ${dockerHubRegistry}:canary"
+          sh "docker rmi ${dockerHubRegistry}:latest"
+          //slackSend (color: '#FF0000', message: "FAILED: Docker Image Push '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+        }
+        success {
+          echo 'Docker Image Push success'
+          sh "docker rmi ${dockerHubRegistry}:${currentBuild.number}"
+          sh "docker rmi ${dockerHubRegistry}:canary"
+          sh "docker rmi ${dockerHubRegistry}:latest"
+          //slackSend (color: '#0AC9FF', message: "SUCCESS: Docker Image Push '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+        }
+      }
+    }
+
+    stage('K8S Manifest Update') {
+      steps {
+        git credentialsId: githubCredential,
+            url: 'https://github.com/seongwoo-choi/marketboro.git',
+            branch: 'cicd'
+
+        sh "git config --global user.email ${gitEmail}"
+        sh "git config --global user.name ${gitName}"
+        sh "sed -i 's/marketboro:*/marketboro:${currentBuild.number}/g' k8s/service/my-app-deployment.yaml"
+        sh "git add ."
+        sh "git commit -m 'fix:${dockerHubRegistry} ${currentBuild.number}, canary image versioning'"
+        sh "git branch -M cicd"
+        sh "git remote remove origin"
+        sh "git remote add origin git@github.com:Infra-Project/OTT-Service-BE.git"
+        sh "git push -u origin main"
+      }
+      post {
+        failure {
+          echo 'K8S Manifest Update failure'
+          //slackSend (color: '#FF0000', message: "FAILED: K8S Manifest Update '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+        }
+        success {
+          echo 'K8s Manifest Update success'
+          //slackSend (color: '#0AC9FF', message: "SUCCESS: K8S Manifest Update '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
+        }
+      }
+    }
+
+  }
+}
