@@ -1,13 +1,12 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
-  name: canary-my-app
+  name: canary-rollout
 spec:
   replicas: 5
   strategy:
     canary:
-      maxSurge: "50%"
-      maxUnavailable: 0
+      canaryService:
       steps:
         - setWeight: 25
         - pause: {}
@@ -25,3 +24,8 @@ spec:
           image: how0326/marketboro:canary
           ports:
             - containerPort: 8080
+          envFrom:
+            - secretRef:
+                name: secret-configs
+            - configMapRef:
+                name: configs
