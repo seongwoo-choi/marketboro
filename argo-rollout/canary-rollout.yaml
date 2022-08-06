@@ -3,21 +3,15 @@ kind: Rollout
 metadata:
   name: argo-my-app
 spec:
-  replicas: 5
+  replicas: 2
   strategy:
     canary:
-      # 트래픽을 20% 씩 10초 단위로 점진적 전환시킨다.
+      # 트래픽을 50% 씩 30초 단위로 점진적 전환시킨다.
       steps:
-        - setWeight: 20
-        - pause: {duration: 10}
-        - setWeight: 40
-        - pause: {duration: 10}
-        - setWeight: 60
-        - pause: { duration: 10 }
-        - setWeight: 80
-        - pause: { duration: 10 }
+        - setWeight: 50
+        - pause: {duration: 30}
         - setWeight: 100
-        - pause: { duration: 10 }
+        - pause: {duration: 30}
   revisionHistoryLimit: 2
   selector:
     matchLabels:

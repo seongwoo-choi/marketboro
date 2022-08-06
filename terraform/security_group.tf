@@ -62,6 +62,15 @@ resource "aws_security_group" "my-sg-bastion" {
     to_port     = "8080"
   }
 
+  ingress {
+    cidr_blocks = ["0.0.0.0/0"]
+    description = "ingress security_group_rule for Argo Rollout Dashboard"
+    from_port   = "3100"
+    protocol    = "tcp"
+    self        = "false"
+    to_port     = "3100"
+  }
+
   egress {
     cidr_blocks = ["0.0.0.0/0"]
     description = "egress security_group_rule for bastion"
@@ -85,11 +94,11 @@ resource "aws_security_group" "my-sg-db" {
 
   ingress {
     cidr_blocks = [aws_vpc.my-vpc.cidr_block]
-    description     = "ingress security_group_rule for db"
-    from_port       = "3306"
-    protocol        = "tcp"
-    self            = "false"
-    to_port         = "3306"
+    description = "ingress security_group_rule for db"
+    from_port   = "3306"
+    protocol    = "tcp"
+    self        = "false"
+    to_port     = "3306"
   }
 
   egress {
