@@ -445,6 +445,10 @@ kubectl argo rollouts version
 kubectl argo rollouts dashboard &
 ```
 
+<Bastion Host IP>:3100 으로 Argo Rollouts 대시보드에 접속할 수 있다. (Bastion Host 보안그룹에 3100 번 포트에 대해 열려있어야 한다.)
+
+![argo-rollouts-dashboard](images/argo-rollouts-dashboard.png)
+
 ```bash
 $ kubectl get all -n argo-rollouts
 ```
@@ -454,11 +458,9 @@ $ kubectl get all -n argo-rollouts
 canary 배포를 위한 canary-rollout.yaml, canary-rollout-service.yaml 파일을 생성한다.
 
 ```bash
-$ kubectl get application
-```
-
-```bash
-$ kubectl argo rolluts list rollout
+# ~/marketboro/argo-rollout
+$ kubectl create -f .
+$ kubectl argo rollouts list rollout
 $ kubectl argo rollouts status argo-my-app
 ```
 
