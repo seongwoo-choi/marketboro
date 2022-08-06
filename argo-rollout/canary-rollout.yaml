@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: canary-my-app
+spec:
+  replicas: 5
+  strategy:
+    canary:
+      steps:
+        - setWeight: 25
+        - pause: {}
+        - setWeight: 50
+        - pause: { duration: 10 }
+        - setWeight: 75
+        - pause: { duration: 10 }
+        - setWeight: 100
+        - pause: { duration: 10 }
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: canary-my-app
+  template:
+    metadata:
+      labels:
+        app: canary-my-app
+    spec:
+      containers:
+        - name: canary-my-app
+          image: how0326/marketboro:latest
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - secretRef:
+                name: secret-configs
+            - configMapRef:
+                name: configs

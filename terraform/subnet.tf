@@ -196,11 +196,11 @@ resource "aws_subnet" "my-private-db-subnet1" {
   private_dns_hostname_type_on_launch            = "ip-name"
 
   tags = {
-    Name                                   = "my-private-db-subnet1"
+    Name = "my-private-db-subnet1"
   }
 
   tags_all = {
-    Name                                   = "my-private-db-subnet1"
+    Name = "my-private-db-subnet1"
   }
 
   vpc_id            = aws_vpc.my-vpc.id
@@ -223,11 +223,11 @@ resource "aws_subnet" "my-private-db-subnet3" {
   private_dns_hostname_type_on_launch            = "ip-name"
 
   tags = {
-    Name                                   = "my-private-db-subnet3"
+    Name = "my-private-db-subnet3"
   }
 
   tags_all = {
-    Name                                   = "my-private-db-subnet3"
+    Name = "my-private-db-subnet3"
   }
 
   vpc_id            = aws_vpc.my-vpc.id

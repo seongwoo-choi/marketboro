@@ -278,6 +278,12 @@ $ watch kubectl get svc,ing,pod,deploy
 
 $ kubectl get ing 에 로드 밸런서 주소가 부착된 것을 확인할 수 있다. 해당 로드밸런서 주소로 이동하면 인그레스가 인그레스 룰에 의해 서비스로 경로를 라우팅해준다.
 
+argo-cd, argo-rollout 을 통해 배포를 할 것이기 때문에 아래 명령어로 리소스들을 삭제해준다. 
+```bash
+# ~/marketboro/k8s/service
+$ kubectl delete -f .
+```
+
 ## API 
 
 1. POST /api/v1/auth/signup
@@ -358,6 +364,139 @@ Jenkins 관리 → Manage Credentials → Domains (global) → Global credential
 Jenkinsfile 스크립트 실행 결과
 
 ![dashboard](images/marketboro-pipeline-dashboard.png)
+
+## ArgoCD 설치
+
+```bash
+# ~/marketboro/argo-management/script
+$ chmod +x argocd.sh
+$ ./argocd.sh
+```
+
+ArgoCD 설치 스크립트
+```bash
+# ArgoCD namespace 생성
+kubectl create namespace argocd
+
+# ArgoCD 설치
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+# argocd-server 서비스 타입을 LoadBalancer 로 변경
+kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
+
+# ArgoCD Web UI 접속에 필요한 PWD 확인
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
+```
+
+```bash
+$ kubectl get all -n argocd
+```
+
+![argoCD_LB](images/argoCD_LB.png)
+
+ArgoCD Web UI 에서 jenkins 유저에서 생성한 private key 를 사용하여 깃허브 레포지토리와 ssh 연결을 한다.
+
+![argocd-ssh-conect](images/argocd-ssh-conect.png)
+
+## ArgoCD Application 생성
+
+Web UI 에서 CD 설정을 진행한다.
+
+![GENERAL](images/GENERAL.png)
+![SOURCE_DESTINATION](images/SOURCE_DESTINATION.png)
+
+- source: repository URL 에서 미리 등록한 git repository 를 선택한 후, 배포할 application 의 위치(git repository)를 Path 에 입력한다.
+- destination: kubernetes 의 어느 cluster 에 배포할지, 어떤 namespace 에 배포할지를 결정한다.
+
+gitOps 방식의 CD 이기 때문에 깃허브 레포지토리의 argoCD 브랜치의 k8s/service 디렉토리에서 커밋 내역이 발생한 경우 CD 가 진행된다.
+
+![my-argo-app](images/my-argo-app.png)
+
+실제 API 가 잘 작동하는 것을 확인할 수 있다.
+
+![signin](images/signin.png)
+
+## Argo Rollout 설치
+
+```bash
+# ~/marketboro/argo-management/script
+$ chmod +x argocd-rollout.sh
+$ ./argocd-rollout.sh
+```
+
+Argo Rollout 설치 스크립트
+```bash
+# argo-rollouts namespace 생성
+kubectl create namespace argo-rollouts
+
+# argo-rollouts 설치
+kubectl apply -n argo-rollouts -f https://github.com/argoproj/argo-rollouts/releases/latest/download/install.yaml
+
+# kubectl plugin 설치
+curl -LO https://github.com/argoproj/argo-rollouts/releases/latest/download/kubectl-argo-rollouts-linux-amd64
+
+chmod +x ./kubectl-argo-rollouts-linux-amd64 
+
+sudo mv ./kubectl-argo-rollouts-linux-amd64 /usr/local/bin/kubectl-argo-rollouts
+
+kubectl argo rollouts version
+
+# argo-rollout dashboard 를 백그라운드로 가동
+kubectl argo rollouts dashboard &
+```
+
+<Bastion Host IP>:3100 으로 Argo Rollouts 대시보드에 접속할 수 있다. (Bastion Host 보안그룹에 3100 번 포트에 대해 열려있어야 한다.)
+
+![argo-rollouts-dashboard](images/argo-rollouts-dashboard.png)
+
+```bash
+$ kubectl get all -n argo-rollouts
+```
+
+## Argo Rollout
+
+canary 배포를 위한 canary-rollout.yaml, canary-rollout-service.yaml 파일을 생성한다.
+
+```bash
+# ~/marketboro/argo-rollout
+$ kubectl create -f .
+$ kubectl argo rollouts list rollout
+$ kubectl argo rollouts status canary-my-app
+```
+
+```yaml
+...
+        spec:
+          containers:
+            - name: canary-rollout-my-app
+              image: how0326/marketboro:latest # -> canary 태그로 변경
+              ports:
+                - containerPort: 8080
+              resources:
+                requests:
+                  memory: 32Mi
+                  cpu: 5m
+```
+
+아래 명령어를 통해 이미지를 변경한다.
+
+```bash
+$ kubectl argo rollouts set image canary-my-app canary-my-app=how0326/marketboro:canary
+```
+
+Argo Rollout Dashboard 접속 후 카나리 배포 과정을 확인이 가능하다. 혹은 아래 명령어로 변경 과정을 확인할 수 있다.
+
+```bash
+$ kubectl argo rollouts get rollout canary-my-app --watch
+```
+
+```bash
+$ kubectl argo rollouts promote canary-my-app
+```
+
+![canary-deploy](images/canary-deploy.png)
+
+![canary-deploy-2](.README_images/canary-deploy-2.png)
 
 ## 오류
 1. metadata of serviceaccounts that exist in Kubernetes will be updated, as --override-existing-serviceaccounts was set
