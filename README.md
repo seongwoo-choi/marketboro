@@ -410,9 +410,11 @@ Web UI 에서 CD 설정을 진행한다.
 
 gitOps 방식의 CD 이기 때문에 깃허브 레포지토리의 argoCD 브랜치의 k8s/service 디렉토리에서 커밋 내역이 발생한 경우 CD 가 진행된다.
 
-```bash
-$ kubectl get application
-```
+![my-argo-app](images/my-argo-app.png)
+
+실제 API 가 잘 작동하는 것을 확인할 수 있다.
+
+![signin](images/signin.png)
 
 ## Argo Rollout 설치
 
@@ -433,7 +435,9 @@ kubectl apply -n argo-rollouts -f https://github.com/argoproj/argo-rollouts/rele
 # kubectl plugin 설치
 curl -LO https://github.com/argoproj/argo-rollouts/releases/latest/download/kubectl-argo-rollouts-linux-amd64
 
-chmod +x ./kubectl-argo-rollouts-linux-amd64 sudo mv ./kubectl-argo-rollouts-linux-amd64 /usr/local/bin/kubectl-argo-rollouts
+chmod +x ./kubectl-argo-rollouts-linux-amd64 
+
+sudo mv ./kubectl-argo-rollouts-linux-amd64 /usr/local/bin/kubectl-argo-rollouts
 
 kubectl argo rollouts version
 
