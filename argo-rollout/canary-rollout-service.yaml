@@ -6,7 +6,8 @@ spec:
   ports:
     - port: 80
       targetPort: 8080
-      nodePort: 30081
   selector:
     app: canary-my-app
-  type: NodePort
+  externalTrafficPolicy: Cluster
+  sessionAffinity: None
+  type: LoadBalancer

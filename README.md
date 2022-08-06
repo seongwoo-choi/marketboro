@@ -461,7 +461,7 @@ canary 배포를 위한 canary-rollout.yaml, canary-rollout-service.yaml 파일�
 # ~/marketboro/argo-rollout
 $ kubectl create -f .
 $ kubectl argo rollouts list rollout
-$ kubectl argo rollouts status argo-my-app
+$ kubectl argo rollouts status canary-my-app
 ```
 
 gitOps 방식이기 때문에 깃허브 레포지토리에 커밋이 일어나야 CD -> Argo Rollout 이뤄진다.
@@ -483,7 +483,7 @@ gitOps 방식이기 때문에 깃허브 레포지토리에 커밋이 일어나�
 Argo Rollout Dashboard 접속 후 카나리 배포 과정을 확인이 가능하다. 혹은 아래 명령어로 변경 과정을 확인할 수 있다.
 
 ```bash
-$ kubectl argo rollouts get rollout argo-my-app --watch
+$ kubectl argo rollouts get rollout canary-my-app --watch
 ```
 
 ## 오류
