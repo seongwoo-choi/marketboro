@@ -122,6 +122,11 @@ $ eksctl version
 $ docker run --name jenkins -d -p 8080:8080 -v ~/jenkins:/var/jenkins_home -u root jenkins/jenkins:latest
 ```
 
+```bash
+# Jenkins 초기 비밀번호 확인
+$ docker exec -it jenkins bash -c "cat /var/jenkins_home/secrets/initialAdminPassword"
+```
+
 ## ingress-alb IAM Policy 생성
 ALB 를 사용하기 위한 IAM 정책을 생성한다.
 
@@ -274,7 +279,7 @@ $ kubectl create configmap configs --from-file=configs
 ## k8s manifest
 
 ```bash
-# ~/marketboro/k8s/deploy
+# ~/marketboro/k8s/service
 $ kubectl create -f ingress-alb.yaml
 $ kubectl create -f my-app-service.yaml
 $ kubectl create -f my-app-deployment.yaml
