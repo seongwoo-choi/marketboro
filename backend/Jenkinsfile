@@ -28,6 +28,7 @@ pipeline {
 
     stage('Docker Image Build') {
       steps {
+        sh "cd backend"
         sh "docker build . -t ${dockerHubRegistry}:${currentBuild.number}"
         sh "docker build . -t ${dockerHubRegistry}:canary"
         sh "docker build . -t ${dockerHubRegistry}:latest"
