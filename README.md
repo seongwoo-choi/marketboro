@@ -465,6 +465,8 @@ argoCD application 은 argoCD 와 동일하게 구성하여 생성한다.
 
 ![argocd-rollout-1](images/argocd-rollout-1.png)
 
+![argocd-canary-rollout](images/argocd-canary-rollout.png)
+
 ```bash
 $ kubectl argo rollouts list rollout
 $ kubectl argo rollouts status canary-my-app
@@ -496,15 +498,14 @@ $ kubectl argo rollouts get rollout canary-my-app --watch
 $ kubectl argo rollouts promote canary-my-app
 ```
 
-Jenkin CI -> Canary 무중단 배포까지 한 번에 처리했다.
+Jenkin CI -> canary 무중단 배포까지 한 번에 처리했다.
 
 ![CI](images/CI.png)
+![argocd-canary-rollout-3](images/argocd-canary-rollout-3.png)
+![api-1](images/api-1.png)
+![api-2](images/api-2.png)
 
-![argocd-canary-rollout](images/argocd-canary-rollout.png)
-
-![argocd-canary-rollout-2](images/argocd-canary-rollout-2.png)
-
-
+실제 canary rollout 이 잘 진행된 것을 확인할 수 있다.
 
 ## 오류
 1. metadata of serviceaccounts that exist in Kubernetes will be updated, as --override-existing-serviceaccounts was set
