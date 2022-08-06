@@ -392,41 +392,26 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.pas
 $ kubectl get all -n argocd
 ```
 
+![argoCD_LB](images/argoCD_LB.png)
+
 ArgoCD Web UI 에서 jenkins 유저에서 생성한 private key 를 사용하여 깃허브 레포지토리와 ssh 연결을 한다.
+
+![argocd-ssh-conect](images/argocd-ssh-conect.png)
 
 ## ArgoCD Application 생성
 
-Web UI 에서 CD 설정을 진행할 수 있지만 argoCD 에서 제공하는 Application 리소스를 사용하여 CD 가 가능하다.
+Web UI 에서 CD 설정을 진행한다.
 
-```bash
-# apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: my-app
-  namespace: default
-spec:
-  destination:
-    namespace: default
-    server: https://kubernetes.default.svc
-  project: default
-  source:
-    path: k8s/service
-    repoURL: git@github.com:seongwoo-choi/marketboro.git
-    targetRevision: HEAD
-  syncPolicy:
-    automated:
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-```
+![GENERAL](images/GENERAL.png)
+![SOURCE_DESTINATION](images/SOURCE_DESTINATION.png)
 
 - source: repository URL 에서 미리 등록한 git repository 를 선택한 후, 배포할 application 의 위치(git repository)를 Path 에 입력한다.
 - destination: kubernetes 의 어느 cluster 에 배포할지, 어떤 namespace 에 배포할지를 결정한다.
 
-argo-cd 를 통한 gitOps 배포
+gitOps 방식의 CD 이기 때문에 깃허브 레포지토리의 argoCD 브랜치의 k8s/service 디렉토리에서 커밋 내역이 발생한 경우 CD 가 진행된다.
+
 ```bash
-# ~/marketboro/argo-cd
-$ kubectl create -f argo-cd-my-app.yaml
+$ kubectl get application
 ```
 
 ## Argo Rollout 설치
