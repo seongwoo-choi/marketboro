@@ -18,7 +18,7 @@ app.use(cors());
 app.use(xss());
 
 app.use("/api/v2/auth", authRoute);
-app.get("/api/v2/health", (req, res, next) => {
+app.get("/api/health", (req, res, next) => {
     res.status(200).json({ msg: "health check" });
 })
 
