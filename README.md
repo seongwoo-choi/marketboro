@@ -359,6 +359,69 @@ Jenkinsfile 스크립트 실행 결과
 
 ![dashboard](images/marketboro-pipeline-dashboard.png)
 
+## ArgoCD 설치
+
+```bash
+# ~/marketboro/argo-management/script
+$ chmod +x argocd.sh
+$ ./argocd.sh
+```
+
+kustomize
+```bash
+# resources:
+#   - https://github.com/<Github Profile명>/<GitHub Repo 이름>//<argocd 리소스있는 디렉토리 경로>?ref=<브랜치>
+
+resources:
+  - https://github.com/seongwoo-choi/marketboro//argo-cd?ref=main
+```
+
+ArgoCD 설치 스크립트
+```bash
+# ArgoCD namespace 생성
+kubectl create namespace argocd
+
+# ArgoCD 설치
+kubectl kustomize ../manifests/| kubectl apply -n argocd -f -
+
+# argocd-server 서비스 타입을 LoadBalancer 로 변경
+kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
+
+# ArgoCD Web UI 접속에 필요한 PWD 확인
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
+```
+
+ArgoCD Web UI 에서 jenkins 유저에서 생성한 private key 를 사용하여 깃허브 레포지토리와 ssh 연결을 한다.
+
+## ArgoCD Application 생성
+
+Web UI 에서 CD 설정을 진행할 수 있지만 argoCD 에서 제공하는 Application 리소스를 사용하여 CD 가 가능하다.
+
+```bash
+# apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: my-app
+  namespace: default
+spec:
+  destination:
+    namespace: default
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: k8s/service
+    repoURL: git@github.com:seongwoo-choi/marketboro.git
+    targetRevision: HEAD
+  syncPolicy:
+    automated:
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+```
+
+- source: repository URL 에서 미리 등록한 git repository 를 선택한 후, 배포할 application 의 위치(git repository)를 Path 에 입력한다.
+- destination: kubernetes 의 어느 cluster 에 배포할지, 어떤 namespace 에 배포할지를 결정한다.
+
 ## 오류
 1. metadata of serviceaccounts that exist in Kubernetes will be updated, as --override-existing-serviceaccounts was set
 eksctl create iamserviceaccount 생성 시 해당 오류가 발생했다.
