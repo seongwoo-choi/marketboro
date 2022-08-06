@@ -6,7 +6,8 @@ spec:
   replicas: 5
   strategy:
     canary:
-      canaryService:
+      maxSurge: "50%"
+      maxUnavailable: 0
       steps:
         - setWeight: 25
         - pause: {}
