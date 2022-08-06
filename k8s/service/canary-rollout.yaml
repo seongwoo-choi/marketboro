@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
         - name: canary-my-app
-          image: how0326/marketboro:9
+          image: how0326/marketboro:canary
           ports:
             - containerPort: 8080
           envFrom:

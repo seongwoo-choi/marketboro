@@ -457,6 +457,14 @@ $ kubectl get all -n argo-rollouts
 
 ~/marketboro/k8s/service 디렉토리에 canary 배포를 위한 canary-rollout.yaml, canary-rollout-service.yaml 파일을 생성한다.
 
+디렉토리 구조를 아래 사진처럼 가져간다.
+
+![directory](images/directory.png)
+
+argoCD application 은 argoCD 와 동일하게 구성하여 생성한다.
+
+![argocd-rollout-1](images/argocd-rollout-1.png)
+
 ```bash
 $ kubectl argo rollouts list rollout
 $ kubectl argo rollouts status canary-my-app
@@ -488,9 +496,15 @@ $ kubectl argo rollouts get rollout canary-my-app --watch
 $ kubectl argo rollouts promote canary-my-app
 ```
 
-![canary-deploy](images/canary-deploy.png)
+Jenkin CI -> Canary 무중단 배포까지 한 번에 처리했다.
 
-![canary-deploy-2](.README_images/canary-deploy-2.png)
+![CI](images/CI.png)
+
+![argocd-canary-rollout](images/argocd-canary-rollout.png)
+
+![argocd-canary-rollout-2](images/argocd-canary-rollout-2.png)
+
+
 
 ## 오류
 1. metadata of serviceaccounts that exist in Kubernetes will be updated, as --override-existing-serviceaccounts was set
