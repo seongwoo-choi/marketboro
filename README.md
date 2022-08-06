@@ -464,14 +464,12 @@ $ kubectl argo rollouts list rollout
 $ kubectl argo rollouts status canary-my-app
 ```
 
-gitOps 방식이기 때문에 깃허브 레포지토리에 커밋이 일어나야 CD -> Argo Rollout 이뤄진다.
-
 ```yaml
 ...
         spec:
           containers:
             - name: canary-rollout-my-app
-              image: how0326/marketboro:latest # -> canary 태그로 변경 후 깃허브에 커밋
+              image: how0326/marketboro:latest # -> canary 태그로 변경
               ports:
                 - containerPort: 8080
               resources:
@@ -480,11 +478,25 @@ gitOps 방식이기 때문에 깃허브 레포지토리에 커밋이 일어나�
                   cpu: 5m
 ```
 
+아래 명령어를 통해 이미지를 변경한다.
+
+```bash
+$ kubectl argo rollouts set image canary-my-app canary-my-app=how0326/marketboro:canary
+```
+
 Argo Rollout Dashboard 접속 후 카나리 배포 과정을 확인이 가능하다. 혹은 아래 명령어로 변경 과정을 확인할 수 있다.
 
 ```bash
 $ kubectl argo rollouts get rollout canary-my-app --watch
 ```
+
+```bash
+$ kubectl argo rollouts promote canary-my-app
+```
+
+![canary-deploy](images/canary-deploy.png)
+
+![canary-deploy-2](.README_images/canary-deploy-2.png)
 
 ## 오류
 1. metadata of serviceaccounts that exist in Kubernetes will be updated, as --override-existing-serviceaccounts was set
