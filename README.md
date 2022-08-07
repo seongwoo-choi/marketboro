@@ -35,6 +35,9 @@ Terraform 모듈을 사용하지 않고 resource 블록으로만 구성했다.
 4. DB 구성
 - DB instance
 - DB Subnet Group
+- Security Group
+- DB Private Subnet
+- DB Private Route Table
 
 ## aws console 에 Bastion Host 접속 용 키 페어 등록
 ec2-key-pair 라는 이름으로 키 페어 등록
@@ -486,7 +489,7 @@ $ kubectl argo rollouts status canary-my-app
                   cpu: 5m
 ```
 
-gitOps 관리 형태이기 때문에 이미지 태그를 변경하고 깃허브에 커밋을 한다.
+gitOps 관리 형태이기 때문에 이미지 태그를 변경하고 깃허브에 커밋을 한다. 혹은 Jenkins CI 를 유발하여 깃허브에 이미지 태그 변경을 커밋한다.
 
 Argo Rollout Dashboard 접속 후 카나리 배포 과정을 확인이 가능하다. 혹은 아래 명령어로 변경 과정을 확인할 수 있다.
 
